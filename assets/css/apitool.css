@@ -1,0 +1,44 @@
+/*Api Toolbox css */
+
+/* extend bootstrap */
+.btn {
+    margin-bottom: 4px;
+}
+.panel-heading button {
+    width: 100%;
+    border: none;
+    background: none;
+}
+#btn-list {
+    border: 1px solid #888;
+    padding: 5px;
+}
+#data-results {
+    font-size: 1.3em;
+    font-weight: 500;
+    margin-left: 20px;
+}
+hr {
+    margin: 5px !important;
+}
+/*shorten boostrap alert and use as button*/
+.alert {
+    padding: 5px 5px !important;
+    margin-bottom: 4px !important;
+    cursor: pointer;
+}
+.alert:hover{
+    border: 1px solid #888;
+}
+
+label {
+    font-size: 1.1em;
+    font-weight: 600;
+}
+input[type="checkbox"] {
+    width: 15px;
+    height: 15px;
+    padding: 5em;
+    margin-right: 20px;
+    /*border: 1px solid #369;*/
+}

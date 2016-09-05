@@ -1,0 +1,6 @@
+plugin:
+    name: 'delphinium.toolbox::lang.plugin.name'
+    description: 'delphinium.toolbox::lang.plugin.description'
+    author: Delphinium
+    icon: oc-icon-wrench
+    homepage: ''

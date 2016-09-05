@@ -1,0 +1,161 @@
+<!--
+Copyright (C) 2012-2016 Project Delphinium - All Rights Reserved
+
+This file is subject to the terms and conditions defined in
+file 'https://github.com/ProjectDelphinium/delphinium/blob/master/EULA',
+which is part of this source code package.
+
+NOTICE:  All information contained herein is, and remains the property of Project Delphinium. The intellectual and technical concepts contained
+herein are proprietary to Project Delphinium and may be covered by U.S. and Foreign Patents, patents in process, and are protected by trade secret or copyright law.
+Dissemination of this information or reproduction of this material is strictly forbidden unless prior written permission is obtained
+from Project Delphinium.
+
+THE RECEIPT OR POSSESSION OF THIS SOURCE CODE AND/OR RELATED INFORMATION DOES NOT CONVEY OR IMPLY ANY RIGHTS
+TO REPRODUCE, DISCLOSE OR DISTRIBUTE ITS CONTENTS, OR TO MANUFACTURE, USE, OR SELL ANYTHING THAT IT  MAY DESCRIBE, IN WHOLE OR IN PART.
+
+Unauthorized copying of this file, via any medium is strictly prohibited
+Non-commercial use only, you may not charge money for the software
+You can modify personal copy of source-code but cannot distribute modifications
+You may not distribute any version of this software, modified or otherwise
+-->
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-xs-3 text-center">
+            <h4>API Tool Box</h4>
+        </div>
+        <div class="col-xs-9"></div>
+    </div>
+
+    <div class="row">
+        <div class="col-xs-3">
+            <div class="panel-group" id="accordion">
+            
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h4 class="panel-title">
+                            <button data-toggle="collapse" data-parent="#accordion" href="#collapseOne">Instructions:</button>
+                        </h4>
+                    </div>
+                    <div id="collapseOne" class="panel-collapse collapse in">
+                        <div class="panel-body">
+                            <p>Open a category below and click the call you want to see. This can help you determine which calls you need when developing a new component.</p>
+                            <p>Click a result item to see more details.</p>
+                            <p>Click the Clear Results button to empty the results panel.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h4 class="panel-title">
+                            <button data-toggle="collapse" data-parent="#accordion" href="#collapseCourse">Course</button>
+                        </h4>
+                    </div>
+                    <div id="collapseCourse" class="panel-collapse collapse">
+                        <div class="panel-body">
+                            <p>Course API's</p>
+                            <button id="getCourse" class="btn btn-sm btn-primary">Get Course Data</button>
+                            <button id="getAccount" class="btn btn-sm btn-primary">Get Account Data</button>
+                            <button id="getEnrollments" class="btn btn-sm btn-info">Get Enrollments</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h4 class="panel-title">
+                            <button data-toggle="collapse" data-parent="#accordion" href="#collapseModule">Modules</button>
+                        </h4>
+                    </div>
+                    <div id="collapseModule" class="panel-collapse collapse">
+                        <div class="panel-body">
+                            <p>Module API's</p>
+                            <button id="getAllModules" class="btn btn-sm btn-primary">Get All Modules</button>
+                            <button class="btn btn-sm btn-info">Get Module States</button>
+                            <button class="btn btn-sm btn-info">Get Module Tree</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h4 class="panel-title">
+                            <button data-toggle="collapse" data-parent="#accordion" href="#collapseAsgn">Assignments</button>
+                        </h4>
+                    </div>
+                    <div id="collapseAsgn" class="panel-collapse collapse">
+                        <div class="panel-body">
+                            <p>Assignment API's</p>
+                            <div><button id="getAllAssignments" class="btn btn-sm btn-primary">Get All Assignments</button></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h4 class="panel-title">
+                            <button data-toggle="collapse" data-parent="#accordion" href="#collapseQuiz">Quizzes</button>
+                        </h4>
+                    </div>
+                    <div id="collapseQuiz" class="panel-collapse collapse">
+                        <div class="panel-body">
+                            <p>Quiz API's</p>
+                            <div><button id="getAllQuizzes" class="btn btn-sm btn-success">Get All Quizzes</button></div>
+                            
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+            <div class="checkbox">
+                <label>
+                    <input id="fresh-data" type="checkbox">
+                    Request fresh data from LMS
+                </label>
+            </div>
+            <div id="btn-list">
+                List the buttons clicked? Id = roots call. Clear too?
+            </div>
+        </div>
+
+        <div class="col-xs-9 well">
+            <div>
+                <button id="clear-results" class="btn btn-sm">Clear Results</button>
+                <span id="data-results">Data Results</span>
+             </div>
+            <div class="results"></div>
+        </div>
+<!--END row & container-->
+    </div>
+</div>
+
+<!-- Modal: show details for a selected question -->
+<div class="control-popup modal fade" id="quest-details" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 id="quest-details-title" class="modal-title">Quiz Questions</h4>
+            </div>
+            <div class="modal-body">
+                <div class="clearfix">
+                    <div id="qtype" class="left questype"></div>
+                    <div id="qpoints" class="right questype"></div>
+                </div>
+                <hr/>
+                <div>
+                    <div id="qtext"></div>
+                </div>
+                <div>
+                    <div id="qanswers"></div>
+                    <div id="qfeedback"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="backbtn" type="button" class="btn btn-primary"> <- Back </button>
+                <button id="nextbtn" type="button" class="btn btn-primary"> Next -> </button>
+            </div>
+        </div>
+    </div>
+</div>

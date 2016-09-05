@@ -1,0 +1,31 @@
+# ===================================
+#  Form Behavior Config
+# ===================================
+
+# Record name
+name: Apitool
+
+# Model Form Field configuration
+form: $/delphinium/toolbox/models/apitool/fields.yaml
+
+# Model Class name
+modelClass: Delphinium\Toolbox\Models\Apitool
+
+# Default redirect location
+defaultRedirect: delphinium/toolbox/apitool
+
+# Create page
+create:
+    title: Create Apitool
+    redirect: delphinium/toolbox/apitool/update/:id
+    redirectClose: delphinium/toolbox/apitool
+
+# Update page
+update:
+    title: Edit Apitool
+    redirect: delphinium/toolbox/apitool
+    redirectClose: delphinium/toolbox/apitool
+
+# Preview page
+preview:
+    title: Preview Apitool
