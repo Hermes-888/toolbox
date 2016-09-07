@@ -29,6 +29,7 @@ use Delphinium\Roots\Enums\ActionType;
 use Delphinium\Roots\Requestobjects\SubmissionsRequest;
 use Delphinium\Roots\Requestobjects\ModulesRequest;
 use Delphinium\Roots\Requestobjects\AssignmentsRequest;
+use Delphinium\Roots\Requestobjects\AssignmentGroupsRequest;
 use Delphinium\Roots\Requestobjects\QuizRequest;
 
 // required
@@ -254,6 +255,25 @@ class Apitool extends ComponentBase
             
         https://octobercms.com/docs/cms/ajax#ajax-handlers
     */
+    public function onGetAccount()
+    {
+        $accountId = \Input::get('accountId');
+        $result = $roots->getAccount($accountId);
+        return json_encode($result);
+    }
+    public function onGetCourse()
+    {
+        $roots = new Roots();
+        $result = $roots->getCourse();
+        return json_encode($result);
+    }
+    public function onGetEnrollments()
+    {
+        $roots = new Roots();
+        $result = $roots->getUserEnrollments();
+        return json_encode($result);
+    }
+    
     public function onGetAllModules()
     {
         $moduleId = null;// specific module
@@ -280,6 +300,18 @@ class Apitool extends ComponentBase
         $req = new AssignmentsRequest(ActionType::GET, $assignment_id, $freshData, null, $includeTags);
         $roots = new Roots();
         $result = $roots->assignments($req);
+        return json_encode($result);
+    }
+    
+    public function onGetAssignmentGroups()
+    {
+        $include_assignments = false;// true to retrieve assignments in group
+        $freshData = \Input::get('freshdata');//true = from LMS : false = from database only
+        $assignmentGpId = null;// id for specific group
+        
+        $req = new AssignmentGroupsRequest(ActionType::GET, $include_assignments, $assignmentGpId, $freshData);
+        $roots = new Roots();
+        $result = $roots->assignmentGroups($req);
         return json_encode($result);
     }
     

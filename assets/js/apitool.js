@@ -21,7 +21,76 @@ $(document).ready(function() {
         //$('#data-results').html('');
     });
     
-    // course, account, enrollments, refreshCache?
+    // course, enrollments, refreshCache?, account 16?
+    // Assignment Groups
+    $('#getCourse').on('click', function(e){
+        // call function in Apitool.php : freshdata?
+        $.request('onGetCourse', {
+            data: {'freshdata':'N/A'},
+            dataType: 'text',// returning info type. returns a json string
+            success: function(data) {
+                //console.log('data:', data.length, data);
+                var res =$.parseJSON(data);
+                //console.log('res:', res.length, res);
+                var result=$.parseJSON(res.result);
+                console.log('Course:', result.length, result);
+                //$('#data-results').html(result.length+' Modules.');
+                //$('.results').append(result.length+' Course:');
+                var display = 'Course account '+result.account_id+' : name '+result.name+' is '+result.workflow_state;
+                // returns account id now go get account?
+                $.request('onGetCourse', {
+                    data: {'accountId':result.account_id},
+                    dataType: 'text',// returning info type. returns a json string
+                    success: function(data) {
+                        //console.log('data:', data.length, data);
+                        var res =$.parseJSON(data);
+                        //console.log('res:', res.length, res);
+                        var result=$.parseJSON(res.result);
+                        console.log('Account:', result.length, result);
+                        //$('#data-results').html(result.length+' Modules.');
+                        display += ' role '+result.enrollments[0].type;
+                        $('.results').append(display);
+                        // returns account id now go get account?
+
+                    }
+                });
+            }
+        });
+    });
+    
+    $('#getEnrollments').on('click', function(e){
+        // call function in Apitool.php : freshdata?
+        $.request('onGetEnrollments', {
+            data: {'freshdata':'N/A'},
+            dataType: 'text',// returning info type. returns a json string
+            success: function(data) {
+                //console.log('data:', data.length, data);
+                var res =$.parseJSON(data);
+                //console.log('res:', res.length, res);
+                var result=$.parseJSON(res.result);
+                console.log('Enrollments:', result.length, result);
+                //$('#data-results').html(result.length+' Modules.');
+                $('.results').append(result.length+' Enrollments:');
+                // returns all course htm_url Im enrolled in, id and role
+                
+                /* // display assignment group names plus assignment?
+                for (var i=0; i<result.length; i++) {
+                    var content = '<div id='+result[i].assignment_id+' class="assignment alert alert-info">';// blue
+                    content += result[i].name+' : points possible '+result[i].points_possible;
+                    if (result[i].quiz_id != null) {
+                        content += ' : Quiz '+result[i].quiz_id;
+                    }
+                    if (result[i].tags != '') {
+                        content += ' : Tags '+result[i].tags;
+                    }
+                    content += '</div>';
+                    $('.results').append(content);
+                }
+                // on click open html_url in new tab?
+                */
+            }
+        });
+    });
     
     // modules  
     $('#getAllModules').on('click', function(e){
@@ -105,6 +174,39 @@ $(document).ready(function() {
                 }
                 // on click open html_url in new tab?
                 
+            }
+        });
+    });
+    // Assignment Groups
+    $('#getAssignmentGroups').on('click', function(e){
+        // call function in Apitool.php : freshdata?
+        $.request('onGetAssignmentGroups', {
+            data: {'freshdata':freshdata},
+            dataType: 'text',// returning info type. returns a json string
+            success: function(data) {
+                //console.log('data:', data.length, data);
+                var res =$.parseJSON(data);
+                //console.log('res:', res.length, res);
+                var result=$.parseJSON(res.result);
+                console.log('Assignment Groups:', result.length, result);
+                //$('#data-results').html(result.length+' Modules.');
+                $('.results').append(result.length+' Assignment Groups:');
+                
+                /* // display assignment group names plus assignment?
+                for (var i=0; i<result.length; i++) {
+                    var content = '<div id='+result[i].assignment_id+' class="assignment alert alert-info">';// blue
+                    content += result[i].name+' : points possible '+result[i].points_possible;
+                    if (result[i].quiz_id != null) {
+                        content += ' : Quiz '+result[i].quiz_id;
+                    }
+                    if (result[i].tags != '') {
+                        content += ' : Tags '+result[i].tags;
+                    }
+                    content += '</div>';
+                    $('.results').append(content);
+                }
+                // on click open html_url in new tab?
+                */
             }
         });
     });
