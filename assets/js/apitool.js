@@ -13,7 +13,7 @@ $(document).ready(function() {
         } else {
            freshdata = 0;// false
         }
-        console.log('freshdata:',freshdata, $(this).prop( "checked" ));
+        //console.log('freshdata:',freshdata, $(this).prop( "checked" ));
     });
     
     $('#clear-results').on('click', function(e){
@@ -22,6 +22,7 @@ $(document).ready(function() {
     });
     
     // course, account, enrollments, refreshCache?
+    
     // modules  
     $('#getAllModules').on('click', function(e){
         // call function in Apitool.php : freshdata?
@@ -33,7 +34,7 @@ $(document).ready(function() {
                 var res =$.parseJSON(data);
                 //console.log('res:', res.length, res);
                 var result=$.parseJSON(res.result);
-                console.log('result:', result.length, result);
+                console.log('Modules:', result.length, result);
                 //$('#data-results').html(result.length+' Modules.');
                 $('.results').append(result.length+' Modules:');
                 
@@ -53,6 +54,22 @@ $(document).ready(function() {
                         return elem.module_id == e.target.id; }
                     );
                     console.log('module:',e.target.id, mod[0]);
+                    
+                    // open modal and display module_items
+                    var items = mod[0].module_items;
+                    var modalbody = '';
+                    for (i=0; i<items.length; i++) {
+                        modalbody +=  '<div id='+items[i].html_url+' class="module-item alert alert-success">';//green
+                        modalbody +=  items[i].title+' : Type '+items[i].type;
+                        modalbody +='</div>';
+                    }
+                    $('#quest-details-title').html(mod[0].name+' - module items');
+                    $('.modal-body').html(modalbody);
+                    $('.modal-footer').hide();// back next btns
+                    $('#quest-details').modal('show');
+                    
+                    // click will open in a new tab?
+                    
                 });
             }
         });
@@ -69,7 +86,7 @@ $(document).ready(function() {
                 var res =$.parseJSON(data);
                 //console.log('res:', res.length, res);
                 var result=$.parseJSON(res.result);
-                console.log('result:', result.length, result);
+                console.log('Assignments:', result.length, result);
                 //$('#data-results').html(result.length+' Modules.');
                 $('.results').append(result.length+' Assignments:');
                 
@@ -86,7 +103,7 @@ $(document).ready(function() {
                     content += '</div>';
                     $('.results').append(content);
                 }
-                // no other details to show?
+                // on click open html_url in new tab?
                 
             }
         });
@@ -101,7 +118,7 @@ $(document).ready(function() {
             success: function(data) { // data contains the returning result
                 //console.log(data);// quiz contains questions
                 var result =$.parseJSON(data);
-                console.log('result:', result.length, result);
+                console.log('Quizzes:', result.length, result);
                 //$('#data-results').html(result.length+' Quizzes. Click one to see the questions.');
                 $('.results').append(result.length+' Quizzes:');
                 
@@ -130,6 +147,13 @@ $(document).ready(function() {
                         return elem.quiz_id == e.target.id; }
                     );
                     console.log('quiz:', e.target.id, quiz[0]);
+                    
+                    // setup modal for questions
+                    var modalbody = '<div class="clearfix"><div id="qtype" class="left questype"></div><div id="qpoints" class="right questype"></div></div>';
+                        modalbody +='<hr/><div><div id="qtext"></div></div>';
+                        modalbody +='<div><div id="qanswers"></div><div id="qfeedback"></div></div>';
+                    $('.modal-body').html(modalbody);
+                    $('.modal-footer').show();// back next btns
                     selectedTitle = quiz[0].title;
                     quests=quiz[0].questions;
                     nextcount=0;// first question
@@ -156,7 +180,7 @@ $(document).ready(function() {
 		if(nextcount<0){ nextcount=quests.length-1; }
 		constructQuestion(nextcount);
     });
-
+    
 	/*
 	*   index is first selected question to see in #quest-details modal
     *   construct: type, points, question, answers and comments
