@@ -250,14 +250,26 @@ class Apitool extends ComponentBase
     
     /**
         API functions:
-            onGetAllModules : Basic Modules Request contains module items and content 
+            onGetCourse : returns account_id then calls onGetAccount
+            onGetEnrollments : All courses user is enrolled in
+            
+            onGetAllModules : Basic Modules Request contains module items and content
+            onGetModuleTree : 
+            onGetModuleStates :
+            
+            onGetAllAssignments :
+            onGetAsssignmentGroups :
+            
             onGetAllQuizzes : quizzes also contain their questions and answers
             
         https://octobercms.com/docs/cms/ajax#ajax-handlers
+        https://github.com/Hermes-888/delphinium/blob/master/dev/components/TestRoots.php
+        need to create a get question_BANKS
     */
     public function onGetAccount()
     {
         $accountId = \Input::get('accountId');
+        $roots = new Roots();
         $result = $roots->getAccount($accountId);
         return json_encode($result);
     }
@@ -290,14 +302,43 @@ class Apitool extends ComponentBase
         return json_encode($result);
     }
     
+    public function onGetModuleTree()
+    {
+        $roots = new Roots();
+        $result = $roots->getModuleTree(true);
+        return json_encode($result);
+    }
+    /*
+        Error GuzzleHelper line 108 : user not authorized to perform that action
+        specific moduleId = same error
+        https://github.com/Hermes-888/blossom/blob/master/components/Modulemap.php
+        research Modulemap it uses module states, err still
+        is this from role=Teacher? token IS available
+    */
+    public function onGetModuleStates()
+    {
+        $moduleId = null;// specific 3846827;//
+        $moduleItemId = null;// specific
+        $includeContentDetails = false;//true; throws error
+        $includeContentItems = false;//true; throws error
+        $module = null;
+        $moduleItem = null;// matches Modulemap
+        $freshData = true;//\Input::get('freshdata');//true = from LMS : false = from database only
+        
+        $req = new ModulesRequest(ActionType::GET, $moduleId, $moduleItemId, $includeContentItems, $includeContentDetails, $module, $moduleItem, $freshData);
+        $roots = new Roots();
+        $result = $roots->getModuleStates($req);
+        return json_encode($result);
+    }
+    
     public function onGetAllAssignments()
     {
-        $assignment_id = null;// or specific id
+        $assignmentId = null;// or specific id
         $freshData = \Input::get('freshdata');//true = from LMS : false = from database only
         //$freshData = true;//true = from LMS : false = from database only
         $includeTags = true;// Stem can add tags to assingments
         
-        $req = new AssignmentsRequest(ActionType::GET, $assignment_id, $freshData, null, $includeTags);
+        $req = new AssignmentsRequest(ActionType::GET, $assignmentId, $freshData, null, $includeTags);
         $roots = new Roots();
         $result = $roots->assignments($req);
         return json_encode($result);
@@ -305,11 +346,11 @@ class Apitool extends ComponentBase
     
     public function onGetAssignmentGroups()
     {
-        $include_assignments = false;// true to retrieve assignments in group
+        $includeAssignments = false;// true to retrieve assignments in group
         $freshData = \Input::get('freshdata');//true = from LMS : false = from database only
         $assignmentGpId = null;// id for specific group
         
-        $req = new AssignmentGroupsRequest(ActionType::GET, $include_assignments, $assignmentGpId, $freshData);
+        $req = new AssignmentGroupsRequest(ActionType::GET, $includeAssignments, $assignmentGpId, $freshData);
         $roots = new Roots();
         $result = $roots->assignmentGroups($req);
         return json_encode($result);
@@ -334,16 +375,10 @@ class Apitool extends ComponentBase
         }
         return $list;
     }
-    
-    // need get question BANKS
+     
     /*
         https://github.com/Hermes-888/delphinium/blob/master/dev/components/TestRoots.php
-        
-        getModuleTree : getModuleStates
-        refreshCache  
-        $this->testGetCourse();
-        $this->testGetAccount();
-        $this->testGetEnrollments();
+        need to create a get question_BANKS
     */
     
     

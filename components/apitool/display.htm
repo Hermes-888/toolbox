@@ -56,7 +56,6 @@ You may not distribute any version of this software, modified or otherwise
                         <div class="panel-body">
                             <p>Course API's</p>
                             <button id="getCourse" class="btn btn-sm btn-primary">Get Course Data</button>
-                            <!--button id="getAccount" class="btn btn-sm btn-primary">Get Account Data</button-->
                             <button id="getEnrollments" class="btn btn-sm btn-info">Get Enrollments</button>
                         </div>
                     </div>
@@ -72,8 +71,9 @@ You may not distribute any version of this software, modified or otherwise
                         <div class="panel-body">
                             <p>Module API's</p>
                             <button id="getAllModules" class="btn btn-sm btn-primary">Get All Modules</button>
-                            <button class="btn btn-sm btn-info">Get Module States</button>
-                            <button class="btn btn-sm btn-info">Get Module Tree</button>
+                            <button id="getModuleTree" class="btn btn-sm btn-info">Get Module Tree</button>
+                            <button id="getModuleStates" class="btn btn-sm btn-info">Get Module States</button>
+                            <button id="updateModule" class="btn btn-sm btn-warning">Update Module</button>
                         </div>
                     </div>
                 </div>
@@ -111,8 +111,7 @@ You may not distribute any version of this software, modified or otherwise
             </div>
             <div class="checkbox">
                 <label>
-                    <input id="fresh-data" type="checkbox">
-                    Request fresh data from LMS
+                    <input id="fresh-data" type="checkbox">Fresh Data from LMS
                 </label>
             </div>
             <div id="btn-list">

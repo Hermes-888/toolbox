@@ -33,12 +33,12 @@ $(document).ready(function() {
                 var res =$.parseJSON(data);
                 //console.log('res:', res.length, res);
                 var result=$.parseJSON(res.result);
-                console.log('Course:', result.length, result);
+                console.log('Course:', result);
                 //$('#data-results').html(result.length+' Modules.');
                 //$('.results').append(result.length+' Course:');
-                var display = 'Course account '+result.account_id+' : name '+result.name+' is '+result.workflow_state;
+                var display = 'Course account '+result.account_id+' : name '+result.name+' is '+result.workflow_state+' role '+result.enrollments[0].type;;
                 // returns account id now go get account?
-                $.request('onGetCourse', {
+                $.request('onGetAccount', {
                     data: {'accountId':result.account_id},
                     dataType: 'text',// returning info type. returns a json string
                     success: function(data) {
@@ -46,9 +46,9 @@ $(document).ready(function() {
                         var res =$.parseJSON(data);
                         //console.log('res:', res.length, res);
                         var result=$.parseJSON(res.result);
-                        console.log('Account:', result.length, result);
+                        console.log('Account:', result);
                         //$('#data-results').html(result.length+' Modules.');
-                        display += ' role '+result.enrollments[0].type;
+                        display += '<br/>Account name '+result.name+' : parent account id '+result.parent_account_id+' : is '+result.workflow_state;
                         $('.results').append(display);
                         // returns account id now go get account?
 
@@ -144,6 +144,93 @@ $(document).ready(function() {
         });
     });
     
+    // Module Tree is constructed with Stem manager
+    $('#getModuleTree').on('click', function(e){
+        // call function in Apitool.php : freshdata?
+        $.request('onGetModuleTree', {
+            data: {'freshdata':'N/A'},
+            dataType: 'text',// returning info type. returns a json string
+            success: function(data) { // data contains the returning result
+                //console.log('data:', data.length, data);// len 90,000 chars
+                var res =$.parseJSON(data);
+                //console.log('res:', res.length, res);
+                var result=$.parseJSON(res.result);
+                console.log('Module Tree:', result.length, result);
+                //$('#data-results').html(result.length+' Modules.');
+                $('.results').append(result.length+' Module Tree:');
+                
+                // display module tree structure
+                var content = '<div id='+result[0].module_id+' class="module alert alert-info">';// blue
+                    content += result[0].name+' : Items '+result[0].items_count;
+                    //content += '';
+                    content += '</div>';
+                    $('.results').append(content);
+                
+                //https://github.com/Hermes-888/blossom/blob/master/assets/javascript/modulemap.js
+                var childrn = result[0].children;
+                for (var i=0; i<childrn.length; i++) {
+                    
+                    //getMyChildren(childrn[i]['children']);// add any children of this child recursively
+                    // or like Stem does
+                    content = '<div id='+childrn[i].module_id+' class="module alert alert-info">';// blue
+                    content += '&nbsp; - '+childrn[i].name+' : Items '+childrn[i].items_count;
+                    //content += '';
+                    content += '</div>';
+                    $('.results').append(content);
+                }
+                // module items
+                $('.module').on('click', function(e) {
+                    e.preventDefault();
+                    // find this module
+                    var mod= $.grep(result, function(elem, indx){
+                        return elem.module_id == e.target.id; }
+                    );
+                    console.log('module:',e.target.id, mod[0]);
+                    
+                    // open modal and display module_items
+                    var items = mod[0].module_items;
+                    var modalbody = '';
+                    for (i=0; i<items.length; i++) {
+                        modalbody +=  '<div id='+items[i].html_url+' class="module-item alert alert-success">';//green
+                        modalbody +=  items[i].title+' : Type '+items[i].type;
+                        modalbody +='</div>';
+                    }
+                    $('#quest-details-title').html(mod[0].name+' - module items');
+                    $('.modal-body').html(modalbody);
+                    $('.modal-footer').hide();// back next btns
+                    $('#quest-details').modal('show');
+                    
+                    // click will open in a new tab?
+                    
+                });
+                
+            }
+        });
+    });
+    // Module States
+    $('#getModuleStates').on('click', function(e){
+        // call function in Apitool.php : freshdata?
+        $.request('onGetModuleStates', {
+            data: {'freshdata':freshdata},
+            dataType: 'text',// returning info type. returns a json string
+            success: function(data) { // data contains the returning result
+                //console.log('data:', data.length, data);// len 90,000 chars
+                var res =$.parseJSON(data);
+                console.log('res:', res.length, res);
+                var result=$.parseJSON(res.result);
+                console.log('Module States:', result.length, result);
+                //$('#data-results').html(result.length+' Modules.');
+                $('.results').append(result.length+' Module States:');
+                /*
+                    Error GuzzleHelper line 108 : user not authorized to perform that action
+                    specific moduleId = same error
+                    https://github.com/Hermes-888/blossom/blob/master/components/Modulemap.php
+                    research Modulemap it uses module states, err still
+                    is this from role=Teacher? token IS available
+                */
+            }
+        });
+    });
     // assignments
     $('#getAllAssignments').on('click', function(e){
         // call function in Apitool.php : freshdata?
@@ -333,6 +420,25 @@ $(document).ready(function() {
 		}
 		$('#qfeedback').html('<hr/>Comments:<br/>'+comdiv);
 	}
+    
+    // common functions
+    
+    /* recursive deep search children for ModuleTree*/
+    function getMyChildren(theObj) {
+        var result = null;
+        for (var i=0; i<theObj.length; i++) {
+            if ('children' in theObj[i]) {
+                // dont use if unpublished
+                if (theObj[i].published == 1) {
+                    modobjs.push(theObj[i]);// all objects
+                    modlist.push(theObj[i]);// build moduledata, modules in tab
+                    result = getMyChildren(theObj[i].children);
+                if (result) { break; }
+                }
+            }
+        }
+        return result;
+    }
     
     // End document.ready
 });
