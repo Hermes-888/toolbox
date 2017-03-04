@@ -202,7 +202,6 @@ class Apitool extends ComponentBase
      */
     private function getInstance($name=null)
     {
-
         if (!isset($_SESSION)) {
             session_start();
         }
@@ -217,15 +216,14 @@ class Apitool extends ComponentBase
                 $name = $this->alias . '_' . $courseId;
             }
             $config = MyModel::firstOrNew(array('name' => $name));
-            if(is_null($config->name)){$config->name = $name;}
-            if(is_null($config->animate)){$config->animate = 1;}
-            if(is_null($config->size)){$config->size = 100;}
-            // custom_css
+            if (is_null($config->name)) {$config->name = $name;}
+            if (is_null($config->animate)) {$config->animate = 1;}
+            if (is_null($config->size)) {$config->size = 100;}
+            if (is_null($config->custom_css)) {$config->custom_css = '';}
             //TODO: finish setting some default values
         }
         $config->save();
         return $config;
-
     }
 
     /**

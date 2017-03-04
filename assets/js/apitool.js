@@ -36,7 +36,8 @@ $(document).ready(function() {
                 console.log('Course:', result);
                 //$('#data-results').html(result.length+' Modules.');
                 //$('.results').append(result.length+' Course:');
-                var display = 'Course account '+result.account_id+' : name '+result.name+' is '+result.workflow_state+' role '+result.enrollments[0].type;;
+                var display = 'Course account '+result.account_id+' : Name '+result.name+' is '+result.workflow_state+' Role '+result.enrollments[0].type;
+                display += '<br/>Start date: '+result.start_at+' End date: '+result.end_at+' Time zone: '+result.time_zone;
                 // returns account id now go get account?
                 $.request('onGetAccount', {
                     data: {'accountId':result.account_id},
