@@ -1,6 +1,7 @@
 $(document).ready(function() {
     /* apitool js */
     console.log('apitool.js JqueryVersion', $.fn.jquery);// v1.11.1
+    console.log('role:', role);
     var freshdata = 0;// false = from database : true = from LMS
     var nextcount = 0;// question num for question details modal
     var selectedTitle = '';// quiz.title for question details modal
@@ -52,7 +53,6 @@ $(document).ready(function() {
                         display += '<br/>Account name '+result.name+' : parent account id '+result.parent_account_id+' : is '+result.workflow_state;
                         $('.results').append(display);
                         // returns account id now go get account?
-
                     }
                 });
             }
@@ -93,6 +93,36 @@ $(document).ready(function() {
         });
     });
     
+    //getGradingStandards
+    $('#getGradingStandards').on('click', function(e){
+        // call function in Apitool.php : freshdata?
+        $.request('onGetGradingStandards', {
+            data: {'freshdata':'N/A'},
+            dataType: 'text',// returning info type. returns a json string
+            success: function(data) {
+                //console.log('data:', data.length, data);
+                var res =$.parseJSON(data);
+                //console.log('res:', res.length, res);
+                var result=$.parseJSON(res.result);
+                console.log('GradingStandards:', result.length, result);
+                //$('#data-results').html(result.length+' Modules.');
+                $('.results').append('Title: '+result[0].title);
+                // returns all course htm_url Im enrolled in, id and role
+                
+                // display assignment group names plus assignment?
+                var scheme = result[0].grading_scheme;
+                for (var i=0; i<scheme.length; i++) {
+                    var content = '<div class="assignment alert alert-success">';// blue
+                    content += scheme[i].name+' : value='+scheme[i].value;
+                    
+                    content += '</div>';
+                    $('.results').append(content);
+                }
+                // on click open html_url in new tab?
+                
+            }
+        });
+    });
     // modules  
     $('#getAllModules').on('click', function(e){
         // call function in Apitool.php : freshdata?
@@ -204,13 +234,18 @@ $(document).ready(function() {
                     // click will open in a new tab?
                     
                 });
-                
             }
         });
     });
     // Module States
     $('#getModuleStates').on('click', function(e){
         // call function in Apitool.php : freshdata?
+        // role must be Learner
+        //console.log('role:', role);
+        if (role == 'Instructor') {
+            alert('You must be viewing this page as a Student.');
+            return false;
+        }
         $.request('onGetModuleStates', {
             data: {'freshdata':freshdata},
             dataType: 'text',// returning info type. returns a json string
@@ -224,11 +259,17 @@ $(document).ready(function() {
                 $('.results').append(result.length+' Module States:');
                 /*
                     Error GuzzleHelper line 108 : user not authorized to perform that action
-                    specific moduleId = same error
-                    https://github.com/Hermes-888/blossom/blob/master/components/Modulemap.php
-                    research Modulemap it uses module states, err still
-                    is this from role=Teacher? token IS available
+                    role=Instructor
                 */
+                for (var i=0; i<result.length; i++) {
+                    var content = '<div id='+result[i].module_id+' class="assignment alert alert-info">';// blue
+                    content += 'module id: '+result[i].module_id+' : state '+result[i].state;
+                    if (result[i].completed_at) {
+                        content += ' : Completed: '+result[i].completed_at;
+                    }
+                    content += '</div>';
+                    $('.results').append(content);
+                }
             }
         });
     });

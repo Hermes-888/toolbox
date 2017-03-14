@@ -1,7 +1,7 @@
 /*Api Toolbox css */
 
 /* extend bootstrap */
-.btn {
+#accordion .btn {
     margin-bottom: 4px;
 }
 .panel-heading button {

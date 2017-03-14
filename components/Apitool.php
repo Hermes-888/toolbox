@@ -98,8 +98,7 @@ class Apitool extends ComponentBase
     public function onRun()
     {
         
-        try
-        {
+        try {
             //NOTES:
             //Components have database instances. The logic for how they are created is as follows:
             //is an instance set in this component's properties? yes show it
@@ -282,6 +281,12 @@ class Apitool extends ComponentBase
     {
         $roots = new Roots();
         $result = $roots->getUserEnrollments();
+        return json_encode($result);
+    }
+    public function onGetGradingStandards()
+    {
+        $roots = new Roots();
+        $result = $roots->getGradingStandards();// nada nope empty
         return json_encode($result);
     }
     
