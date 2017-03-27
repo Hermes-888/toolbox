@@ -37,8 +37,9 @@
                         <div class="panel-body">
                             <p>Course API's</p>
                             <button id="getCourse" class="btn btn-sm btn-primary">Get Course Data</button>
-                            <button id="getEnrollments" class="btn btn-sm btn-info">Get Enrollments</button>
-                            <button id="getGradingStandards" class="btn btn-sm btn-info">Get Grading Standards</button>
+                            <button id="getGradingStandards" class="btn btn-sm btn-success">Get Grading Standards</button>
+                            <button id="getEnrollments" class="btn btn-sm btn-warning">Get Enrollments</button>
+                            <button id="getUsers" class="btn btn-sm btn-warning">Get Users</button>
                         </div>
                     </div>
                 </div>
@@ -86,6 +87,25 @@
                             <p>Quiz API's</p>
                             <button id="getAllQuizzes" class="btn btn-sm btn-primary">Get All Quizzes</button>
                             
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h4 class="panel-title">
+                            <button data-toggle="collapse" data-parent="#accordion" href="#collapseOutcomes">Outcomes/Rubrics</button>
+                        </h4>
+                    </div>
+                    <div id="collapseOutcomes" class="panel-collapse collapse">
+                        <div class="panel-body">
+                            <p>Outcomes API's (custom)</p>
+                            <button id="getOutcomes" class="btn btn-sm btn-primary">Get Outcomes</button>
+                            <p>Other calls should be available when this is added to roots.</p>
+                            
+                            <hr>
+                            <p>MISC:</p>
+                            <button id="getTools" class="btn btn-sm btn-info">Get External Tools</button>
                         </div>
                     </div>
                 </div>

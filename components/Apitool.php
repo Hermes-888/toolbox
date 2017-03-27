@@ -32,6 +32,8 @@ use Delphinium\Roots\Requestobjects\AssignmentsRequest;
 use Delphinium\Roots\Requestobjects\AssignmentGroupsRequest;
 use Delphinium\Roots\Requestobjects\QuizRequest;
 
+use Delphinium\Roots\Guzzle\GuzzleHelper;//for getOutcomeResults custom api call
+
 // required
 use Delphinium\Toolbox\Controllers\Apitool as MyController;
 use Delphinium\Toolbox\Models\Apitool as MyModel;
@@ -379,11 +381,72 @@ class Apitool extends ComponentBase
         }
         return $list;
     }
-     
+    
     /*
         https://github.com/Hermes-888/delphinium/blob/master/dev/components/TestRoots.php
         need to create a get question_BANKS
     */
     
+    
+    /*https://canvas.instructure.com/doc/api/external_tools.html
+        
+    */
+    public function onGetExternalTools() {
+        $roots = new Roots();
+        $result = $roots->getExternalTools();
+        return json_encode($result);
+    }
+    
+    /**
+     *  Custom Canvas API call that has not been added to Roots yet
+     *  https://canvas.instructure.com/doc/api/outcome_results.html
+     */
+    public function onGetOutcomes() {
+        if (!isset($_SESSION)) {
+            session_start();
+        }
+        $domain = $_SESSION['domain'];
+        $token = \Crypt::decrypt($_SESSION['userToken']);
+        $courseId = $_SESSION['courseID'];
+        $urlPieces = array();
+        $urlArgs = array();
+        $singleRow = false;
+    
+        $urlPieces[] = "https://{$domain}/api/v1/courses/{$courseId}";
+        $urlPieces[] = "outcome_results";
+        //$urlArgs[] = "include=['alignments','outcomes','outcomes.alignments','outcome_groups','outcome_links','outcome_paths','users']";
+        $urlArgs[] = "include=['outcomes']";
+    
+        //Attach token
+        $urlArgs[] = "access_token={$token}";
+        $urlArgs[] = "per_page=5000";
+        $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
+        
+        $request = new ModulesRequest(ActionType::GET);// worked
+        $response = GuzzleHelper::makeRequest($request, $url, false, $token);
+        
+        //$outs = $response['linked']["['outcomes']"];// php 7 ?
+        $outs = $response->linked->{"['outcomes']"};// php 5.5.38 ?
+        $outs = array_map('json_encode', $outs);
+        $outs = array_unique($outs);
+        $outs = array_map('json_decode', $outs);
+        return json_encode($outs);
+        //return $outs;
+    }
+
+    /* getUsers or enrollments?
+    *   https://canvas.instructure.com/doc/api/users.html
+    *   https://canvas.instructure.com/doc/api/enrollments.html
+    
+        $roots->getUsersInCourse();
+        $roots->getStudentsInCourse(); 
+        $roots->getUser(user_id);
+        getAccount($accountId) ?
+    */
+    public function onGetUsers() {
+        $roots = new Roots();
+        $result = $roots->getUsersInCourse();
+        return json_encode($result);
+    }
     
 }

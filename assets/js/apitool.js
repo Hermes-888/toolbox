@@ -394,7 +394,100 @@ $(document).ready(function() {
             }
         });
     });
-
+    
+    /*
+        custom api call: returns outcomes
+        Has not been added to Roots yet
+    */
+    var outcomes = [];
+    $('#getOutcomes').on('click', function(e){
+        $.request('onGetOutcomes', {
+            data: {'freshdata':freshdata},
+            dataType: 'text',// returning info type. returns a json string
+            success: function(data) {
+                //console.log('data:', data.length, data);
+                var res =$.parseJSON(data);
+                //console.log('res:', res.length, res);
+                var result=$.parseJSON(res.result);
+                console.log('Outcomes:', result.length, result);
+                //$('#data-results').html(result.length+' Modules.');
+                $('.results').append(result.length+' Outcomes:');
+                outcomes = result;
+                
+                // display assignment group names plus assignment?
+                for (var i=0; i<result.length; i++) {
+                    var content = '<div id='+result[i].id+' class="outcome alert alert-info">';// blue
+                    content += result[i].title+' : points possible '+result[i].points_possible;
+                    content += ' : alignments '+result[i].alignments.length;
+                    content += '</div>';
+                    content += '<p>'+result[i].description+'</p><hr>';
+                    
+                    $('.results').append(content);
+                    
+                }
+                // on click to display alignments
+                $('.outcome').on('click', function(e) {
+                    console.log(e.target.id);
+                    var out = $.grep(outcomes, function(elem, indx){
+                        return elem.id == e.target.id; }
+                    );
+                    console.log('Alignments:',out[0].title, out[0].alignments);
+                });
+            }
+        });
+    });
+    
+    // users in course? 
+    $('#getUsers').on('click', function(e){
+        // call function in Apitool.php : freshdata?
+        $.request('onGetUsers', {
+            data: {'freshdata':freshdata},
+            dataType: 'text',// returning info type. returns a json string
+            success: function(data) {
+                //console.log('data:', data.length, data);
+                var res =$.parseJSON(data);
+                //console.log('res:', res.length, res);
+                var result=$.parseJSON(res.result);
+                console.log('Users:', result.length, result);
+                //$('#data-results').html(result.length+' Modules.');
+                $('.results').append(result.length+' Users:');
+                
+                for (var i=0; i<result.length; i++) {
+                    var content = '<div id='+result[i].id+' class="tools alert alert-info">';// blue
+                    content += result[i].name+' : user login id '+result[i].login_id+' : canvas id '+result[i].id;
+                    content += '</div>';
+                    
+                    $('.results').append(content);
+                }
+            }
+        });
+    });
+    
+    // get external tools getTools
+    $('#getTools').on('click', function(e){
+        // call function in Apitool.php : freshdata?
+        $.request('onGetExternalTools', {
+            data: {'freshdata':freshdata},
+            dataType: 'text',// returning info type. returns a json string
+            success: function(data) {
+                //console.log('data:', data.length, data);
+                var res =$.parseJSON(data);
+                //console.log('res:', res.length, res);
+                var result=$.parseJSON(res.result);
+                console.log('Tools:', result.length, result);
+                //$('#data-results').html(result.length+' Modules.');
+                $('.results').append(result.length+' Tools:');
+                
+                for (var i=0; i<result.length; i++) {
+                    var content = '<div id='+result[i].id+' class="tools alert alert-info">';// blue
+                    content += result[i].name+' : url '+result[i].url;
+                    content += '</div>';
+                    
+                    $('.results').append(content);
+                }
+            }
+        });
+    });
     
     // see question details 
     $('#nextbtn').on('click', function(e) {
