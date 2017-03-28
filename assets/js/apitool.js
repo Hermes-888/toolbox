@@ -489,6 +489,45 @@ $(document).ready(function() {
         });
     });
     
+    // submissions Must have a valid student id (TestStudent = 1695680)
+    // or array of ids?
+    var submissions = [];
+    $('#getSubmissions').on('click', function(e){
+        
+        $.request('onGetSubmissions', {
+            data: {'freshdata':freshdata, 'studentId':1695680},
+            dataType: 'text',// returning info type. returns a json string
+            success: function(data) {
+                //console.log('data:', data.length, data);
+                var res =$.parseJSON(data);
+                //console.log('res:', res.length, res);
+                var result=$.parseJSON(res.result);
+                console.log('Submissions:', result.length, result);
+                $('.results').append(result.length+' Submissions for User ID: '+result[0].user_id);
+                submissions = result;
+                
+                for (var i=0; i<result.length; i++) {
+                    var content = '<div id='+i+' class="sublinks alert alert-info">';// blue
+                    content += 'assignment_id: '+result[i].assignment_id+' : score '+result[i].score;
+                    content += ' : submission_id: '+result[i].submission_id;
+                    content += '</div>';
+                    
+                    $('.results').append(content);
+                }
+                
+                $('.sublinks').on('click', function(e) {
+                    console.log(e.target.id);
+                    var index = parseInt(e.target.id);
+                    console.log('Submissions:',submissions[index].assignment_id, submissions[index].preview_url);
+                    //https://uvu.instructure.com/courses/435103/assignments/3010941/submissions/1695680?preview=1&version=2
+                    var urlpart = submissions[index].preview_url.split('submissions');
+                    // open in new window //console.log(urlpart[0],urlpart[1]);
+                    window.open(urlpart[0],'_blank');
+                });
+            }
+        });
+    });
+    
     // see question details 
     $('#nextbtn').on('click', function(e) {
         e.preventDefault();

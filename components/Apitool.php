@@ -251,7 +251,7 @@ class Apitool extends ComponentBase
     /**
         API functions:
             onGetCourse : returns account_id then calls onGetAccount
-            onGetEnrollments : All courses user is enrolled in
+            onGetEnrollments : All courses this user is enrolled in
             
             onGetAllModules : Basic Modules Request contains module items and content
             onGetModuleTree : 
@@ -261,6 +261,12 @@ class Apitool extends ComponentBase
             onGetAsssignmentGroups :
             
             onGetAllQuizzes : quizzes also contain their questions and answers
+            
+            onGetOutcomes: eventually will have multiple options
+            onGetUsers: doesn't return TestStudent
+            
+            onGetExternalTools: course level tools
+            onGetSubmissions: must have at least one valid TestStudent id, or array of ids?
             
         https://octobercms.com/docs/cms/ajax#ajax-handlers
         https://github.com/Hermes-888/delphinium/blob/master/dev/components/TestRoots.php
@@ -285,13 +291,28 @@ class Apitool extends ComponentBase
         $result = $roots->getUserEnrollments();
         return json_encode($result);
     }
+    /* getUsers or enrollments?
+     *   https://canvas.instructure.com/doc/api/users.html
+     *   https://canvas.instructure.com/doc/api/enrollments.html
+    
+        $roots->getUsersInCourse();
+        $roots->getStudentsInCourse(); 
+        $roots->getUser(user_id);
+        getAccount($accountId) ?
+     */
+    public function onGetUsers() {
+        $roots = new Roots();
+        $result = $roots->getUsersInCourse();
+        return json_encode($result);
+    }
+
     public function onGetGradingStandards()
     {
         $roots = new Roots();
         $result = $roots->getGradingStandards();// nada nope empty
         return json_encode($result);
     }
-    
+
     public function onGetAllModules()
     {
         $moduleId = null;// specific module
@@ -302,7 +323,7 @@ class Apitool extends ComponentBase
         $moduleItem = null;
         $freshData = \Input::get('freshdata');//true = from LMS : false = from database only
         
-        $req = new ModulesRequest(ActionType::GET, $moduleId, $moduleItemId, $includeContentItems, $includeContentDetails, $module, $moduleItem, $freshData) ;
+        $req = new ModulesRequest(ActionType::GET, $moduleId, $moduleItemId, $includeContentItems, $includeContentDetails, $module, $moduleItem, $freshData);
         $roots = new Roots();
         $result = $roots->modules($req);
         return json_encode($result);
@@ -314,19 +335,17 @@ class Apitool extends ComponentBase
         $result = $roots->getModuleTree(true);
         return json_encode($result);
     }
+
     /*
         Error GuzzleHelper line 108 : user not authorized to perform that action
-        specific moduleId = same error
-        https://github.com/Hermes-888/blossom/blob/master/components/Modulemap.php
-        research Modulemap it uses module states, err still
-        is this from role=Teacher? token IS available
+        Must be in Student View. role=Learner
     */
     public function onGetModuleStates()
     {
         $moduleId = null;// specific 3846827;//
         $moduleItemId = null;// specific
-        $includeContentDetails = false;//true; throws error
-        $includeContentItems = false;//true; throws error
+        $includeContentDetails = false;//true; //throws error
+        $includeContentItems = false;//true; //throws error
         $module = null;
         $moduleItem = null;// matches Modulemap
         $freshData = true;//\Input::get('freshdata');//true = from LMS : false = from database only
@@ -336,7 +355,7 @@ class Apitool extends ComponentBase
         $result = $roots->getModuleStates($req);
         return json_encode($result);
     }
-    
+
     public function onGetAllAssignments()
     {
         $assignmentId = null;// or specific id
@@ -349,7 +368,7 @@ class Apitool extends ComponentBase
         $result = $roots->assignments($req);
         return json_encode($result);
     }
-    
+
     public function onGetAssignmentGroups()
     {
         $includeAssignments = false;// true to retrieve assignments in group
@@ -361,7 +380,7 @@ class Apitool extends ComponentBase
         $result = $roots->assignmentGroups($req);
         return json_encode($result);
     }
-    
+
     public function onGetAllQuizzes()
     {
         $quizId = null;// specific quiz
@@ -381,22 +400,7 @@ class Apitool extends ComponentBase
         }
         return $list;
     }
-    
-    /*
-        https://github.com/Hermes-888/delphinium/blob/master/dev/components/TestRoots.php
-        need to create a get question_BANKS
-    */
-    
-    
-    /*https://canvas.instructure.com/doc/api/external_tools.html
-        
-    */
-    public function onGetExternalTools() {
-        $roots = new Roots();
-        $result = $roots->getExternalTools();
-        return json_encode($result);
-    }
-    
+
     /**
      *  Custom Canvas API call that has not been added to Roots yet
      *  https://canvas.instructure.com/doc/api/outcome_results.html
@@ -434,18 +438,35 @@ class Apitool extends ComponentBase
         //return $outs;
     }
 
-    /* getUsers or enrollments?
-    *   https://canvas.instructure.com/doc/api/users.html
-    *   https://canvas.instructure.com/doc/api/enrollments.html
-    
-        $roots->getUsersInCourse();
-        $roots->getStudentsInCourse(); 
-        $roots->getUser(user_id);
-        getAccount($accountId) ?
+    /*
+        https://github.com/Hermes-888/delphinium/blob/master/dev/components/TestRoots.php
+        wish there was a get question_BANKS
     */
-    public function onGetUsers() {
+    /* https://canvas.instructure.com/doc/api/external_tools.html */
+    public function onGetExternalTools() {
         $roots = new Roots();
-        $result = $roots->getUsersInCourse();
+        $result = $roots->getExternalTools();
+        return json_encode($result);
+    }
+
+    public function onGetSubmissions()
+    {
+        $studentId = \Input::get('studentId');
+
+        $studentIds = array($studentId);// must have at least one valid id like TestStudent
+        $assignmentIds = array();//if we leave this param empty it will return all of the available submissions
+        //(see https://canvas.instructure.com/doc/api/submissions.html#method.submissions_api.for_students)
+        $multipleStudents = false;
+        $multipleAssignments = true;
+        $allStudents = false;
+        $allAssignments = true;
+
+        //can have the student Id param null if multipleStudents is set to false (we'll only get the current user's submissions)
+        $req = new SubmissionsRequest(ActionType::GET, $studentIds, $allStudents,
+            $assignmentIds, $allAssignments, $multipleStudents, $multipleAssignments);
+
+        $roots = new Roots();
+        $result = $roots->submissions($req);
         return json_encode($result);
     }
     
