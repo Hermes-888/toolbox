@@ -470,4 +470,14 @@ class Apitool extends ComponentBase
         return json_encode($result);
     }
     
+    public function onGetAnalytics()
+    {
+        $studentId = \Input::get('studentId');
+        $includeTags = \Input::get('includeTags');
+        $roots = new Roots();
+        $result = $roots->getAnalyticsAssignmentData($includeTags);
+        //$result = $roots->getAnalyticsStudentAssignmentData($includeTags, $studentId)
+        return json_encode($result);
+    }
+    
 }
