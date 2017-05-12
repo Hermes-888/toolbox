@@ -475,8 +475,9 @@ class Apitool extends ComponentBase
         $studentId = \Input::get('studentId');
         $includeTags = \Input::get('includeTags');
         $roots = new Roots();
-        $result = $roots->getAnalyticsAssignmentData($includeTags);
-        //$result = $roots->getAnalyticsStudentAssignmentData($includeTags, $studentId)
+        //$result = $roots->getAnalyticsAssignmentData($includeTags);
+        //$studentId = 1695680;//TestStudent dev : 1604486
+        $result = $roots->getAnalyticsStudentAssignmentData($includeTags, $studentId);
         return json_encode($result);
     }
     
