@@ -3,7 +3,7 @@ $(document).ready(function() {
     console.log('apitool.js JqueryVersion', $.fn.jquery);// v1.11.1
     console.log('role:', role);
     var freshdata = 0;// false = from database : true = from LMS
-    var studentId = 1695680;// user can change id
+    var studentId = 1683300;// user can change id 1669437, 8, 9
     var nextcount = 0;// question num for question details modal
     var selectedTitle = '';// quiz.title for question details modal
     var quests = [];// selected quiz questions
@@ -19,9 +19,10 @@ $(document).ready(function() {
     });
     
     /*
-     add an input field to enter studentId
-     'studentId':1695680
+     studentId can be obtained from testStudent by looking at the Grades
+     testStudent is not returned by getUsers
     */
+    $('#studentId').val(studentId);
     $('#studentId').on('input', function(){
         studentId = parseInt($(this).val());
         console.log('studentId:', studentId);
@@ -556,17 +557,78 @@ $(document).ready(function() {
                 var result=$.parseJSON(res.result);
                 console.log('Analytics:', result.length, result);
                 if(result.length > 0) {
-                    $('.results').append(result.length+' Analytics for User ID: '+result[0].user_id);
+                    $('.results').append('<br/>Analytics for User ID: '+studentId);// known user
+                    analytics = result;
+                    var submitted = 0;// assignments with score
+                    var score = 0;// total score
+                    for (var i=0; i<result.length; i++) {
+                        if (result[i].submission.score != null) {
+                            var content = '<div id='+i+' class="anlinks alert alert-info">';// blue
+                            //content += 'assignment_id: '+result[i].assignment_id+' : ';
+                            content += 'Score: '+result[i].submission.score+'/'+result[i].points_possible;
+                            content += ' : title: '+result[i].title;
+                            // tags, tardiness.total
+                            content += '</div>';
+                            score += result[i].submission.score;
+                            submitted ++;
+
+                            $('.results').append(content);
+                        }
+                    }
+                    $('.results').append('Has Completed: '+submitted+' Total Score: '+score);
+                    
+                    /*$('.anlinks').on('click', function(e) {
+                        console.log(e.target.id);
+                        var index = parseInt(e.target.id);
+                        console.log('analytics:',analytics[index].assignment_id, analytics[index].preview_url);
+                        //https://uvu.instructure.com/courses/435103/assignments/3010941/submissions/1695680?preview=1&version=2
+                        //var urlpart = submissions[index].preview_url.split('submissions');
+                        // open in new window //console.log(urlpart[0],urlpart[1]);
+                        //window.open(urlpart[0],'_blank');
+                    });*/
+                } else {
+                    $('.results').append('No Analytics data returned');
+                }
+            }
+        });
+    });
+    
+    $('#getAnalyticsAll').on('click', function(e){
+        
+        $.request('onGetAnalyticsAll', {
+            data: {},
+            dataType: 'text',// returning info type. returns a json string
+            success: function(data) {
+                //console.log('data:', data.length, data);
+                var res =$.parseJSON(data);
+                //console.log('res:', res.length, res);
+                var result=$.parseJSON(res.result);
+                console.log('Analytics All:', result.length, result);
+                if(result.length > 0) {
+                    $('.results').append(result.length+' Students<br/>');
                     analytics = result;
 
                     for (var i=0; i<result.length; i++) {
-                        var content = '<div id='+i+' class="anlinks alert alert-info">';// blue
-                        content += 'assignment_id: '+result[i].assignment_id+' : points '+result[i].points_possible;
-                        content += ' : title: '+result[i].title;
-                        // tags, tardiness.total
-                        content += '</div>';
+                        $('.results').append('Analytics for User ID: ['+result[i].userId);
+                        var submitted = 0;// assignments with score
+                        var score = 0;// total score
+                        var asgnData = result[i].assignmentData;
+                        for (var a=0; a<asgnData.length; a++) {
+                            
+                            if (asgnData[a].submission.score != null) {
+                                var content = '<div id='+i+' class="anlinks alert alert-info">';// blue
+                                //content += 'assignment_id: '+asgnData[a].assignment_id+' : ';
+                                content += 'Score: '+asgnData[a].submission.score+'/'+asgnData[a].points_possible;
+                                content += ' : title: '+asgnData[a].title;
+                                // status, due_at, unlock_at
+                                content += '</div>';
+                                score += asgnData[a].submission.score;
+                                submitted ++;
 
-                        $('.results').append(content);
+                            $('.results').append(content);
+                            }
+                        }
+                        $('.results').append('Has Completed: '+submitted+' Total Score: '+score);
                     }
 
                     /*$('.anlinks').on('click', function(e) {

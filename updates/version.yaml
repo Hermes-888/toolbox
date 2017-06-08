@@ -3,3 +3,5 @@
 1.0.2:
     - create apitools table
     - create_apitools_table.php
+1.0.3:
+    - 'add useful API calls'

@@ -128,6 +128,7 @@ class Apitool extends ComponentBase
             //get LMS roles --used to determine functions and display options
             $roleStr = $_SESSION['roles'];
             $this->page['role'] = $roleStr;
+            //$userId = $_SESSION['userID'];
 
             //THIS NEXT SECTION WILL PROVIDE TEACHERS WITH FRONT-EDITING CAPABILITIES OF THE BACKEND INSTANCES.
             //A CONTROLLER AND MODEL MUST EXIST FOR THE INSTANCES OF THIS COMPONENT SO THE BACKEND FORM CAN BE USED IN THE FRONT END FOR THE TEACHERS TO USE
@@ -141,7 +142,9 @@ class Apitool extends ComponentBase
                 $this->page['custom_css'] = $cssStr;
             }
             // include the backend form with instructions for instructor.htm
-            if(stristr($roleStr, 'Instructor')||stristr($roleStr, 'TeachingAssistant'))
+            
+            //if(stristr($roleStr, 'Instructor')||stristr($roleStr, 'TeachingAssistant'))
+            if ( !stristr($roleStr, 'Learner') )
             {
             //INCLUDE JS AND CSS
             //include your css. Note: bootstrap.min.css is part of minimal layout.
@@ -426,6 +429,9 @@ class Apitool extends ComponentBase
         $urlArgs[] = "per_page=5000";
         $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
         
+        $response = json_encode($response);
+        $response = json_decode($response);
+        
         $request = new ModulesRequest(ActionType::GET);// worked
         $response = GuzzleHelper::makeRequest($request, $url, false, $token);
         
@@ -475,9 +481,18 @@ class Apitool extends ComponentBase
         $studentId = \Input::get('studentId');
         $includeTags = \Input::get('includeTags');
         $roots = new Roots();
-        //$result = $roots->getAnalyticsAssignmentData($includeTags);
-        //$studentId = 1695680;//TestStudent dev : 1604486
-        $result = $roots->getAnalyticsStudentAssignmentData($includeTags, $studentId);
+        //$result = $roots->getAnalyticsAssignmentData($includeTags);// no Submissions
+        //$studentId = 1669437;//1695680;//TestStudent dev : 1688499
+        $result = $roots->getAnalyticsStudentAssignmentData($includeTags, $studentId);// known user id
+        //$result = $roots->getAnalyticsStudentAssignmentDataMultiple(array($studentId));
+        //$result = $roots->getAnalyticsStudentAssignmentDataMultiple(array('all'));
+        return json_encode($result);
+    }
+    
+    public function onGetAnalyticsAll()
+    {
+        $roots = new Roots();
+        $result = $roots->getAnalyticsStudentAssignmentDataMultiple(array('all'));
         return json_encode($result);
     }
     
