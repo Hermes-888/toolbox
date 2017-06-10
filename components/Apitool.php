@@ -492,7 +492,7 @@ class Apitool extends ComponentBase
     public function onGetAnalyticsAll()
     {
         $roots = new Roots();
-        $result = $roots->getAnalyticsStudentAssignmentDataMultiple(array('all'));
+        $result = $roots->getAnalyticsStudentAssignmentDataMultiple('all');
         return json_encode($result);
     }
     
