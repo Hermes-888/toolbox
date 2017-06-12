@@ -250,31 +250,34 @@ class Apitool extends ComponentBase
         $config->save();// update original record
         return json_encode($config);// back to instructor view
     }
-    
-    /**
-        API functions:
-            onGetCourse : returns account_id then calls onGetAccount
-            onGetEnrollments : All courses this user is enrolled in
-            
-            onGetAllModules : Basic Modules Request contains module items and content
-            onGetModuleTree : 
-            onGetModuleStates :
-            
-            onGetAllAssignments :
-            onGetAsssignmentGroups :
-            
-            onGetAllQuizzes : quizzes also contain their questions and answers
-            
-            onGetOutcomes: eventually will have multiple options
-            onGetUsers: doesn't return TestStudent
-            
-            onGetExternalTools: course level tools
-            onGetSubmissions: must have at least one valid TestStudent id, or array of ids?
-            
+
+    /* API functions:
+        onGetCourse : returns account_id then calls onGetAccount
+        onGetEnrollments : All courses this user is enrolled in
+
+        onGetAllModules : Basic Modules Request contains module items and content
+        onGetModuleTree : 
+        onGetModuleStates :
+
+        onGetAllAssignments :
+        onGetAsssignmentGroups :
+
+        onGetAllQuizzes : quizzes also contain their questions and answers
+
+        onGetOutcomes: could eventually have multiple options
+        onGetUsers: doesn't return TestStudent
+
+        onGetExternalTools: course level tools
+        onGetSubmissions: must have at least one valid TestStudent id, or array of ids?
+        
+        onGetAnalyticsAll: ('all') or (array(studentId, ...)) 
+        returns userId: and list of all assignments. Use assignment->submission->score
+        
         https://octobercms.com/docs/cms/ajax#ajax-handlers
         https://github.com/Hermes-888/delphinium/blob/master/dev/components/TestRoots.php
-        need to create a get question_BANKS
+        Instructure needs to create a get question_BANKS
     */
+
     public function onGetAccount()
     {
         $accountId = \Input::get('accountId');
@@ -405,10 +408,16 @@ class Apitool extends ComponentBase
     }
 
     /**
-     *  Custom Canvas API call that has not been added to Roots yet
-     *  https://canvas.instructure.com/doc/api/outcome_results.html
+     * https://canvas.instructure.com/doc/api/outcome_results.html
      */
     public function onGetOutcomes() {
+        $roots = new Roots();
+        $outcomes = $roots->getOutcomes(true);//freshdata always?
+    }
+    /**
+     *  Custom Canvas API call 
+     */
+    public function onChangeToTestNewCalls() {
         if (!isset($_SESSION)) {
             session_start();
         }
@@ -492,7 +501,7 @@ class Apitool extends ComponentBase
     public function onGetAnalyticsAll()
     {
         $roots = new Roots();
-        $result = $roots->getAnalyticsStudentAssignmentDataMultiple('all');
+        $result = $roots->getAnalyticsStudentAssignmentDataMultiple('all');// or (array(studentId, ...));
         return json_encode($result);
     }
     
